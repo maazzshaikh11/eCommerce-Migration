@@ -1,1 +1,0 @@
-# Bicep main template
