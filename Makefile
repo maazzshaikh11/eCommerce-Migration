@@ -1,5 +1,5 @@
 .PHONY: help \
-	restore \
+	restore init \
 	build build-backend build-frontend \
 	test test-backend test-frontend test-e2e \
 	lint format verify \
@@ -77,3 +77,6 @@ docker-down: ## Stop application stack
 
 clean: ## Remove build artifacts
 	cd src/backend && dotnet clean Ecommerce.sln
+
+init: restore ## Initialize the project
+	@echo "Project initialized successfully."
