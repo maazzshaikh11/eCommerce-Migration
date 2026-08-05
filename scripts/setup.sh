@@ -1,1 +1,0 @@
-# Linux/Mac setup script

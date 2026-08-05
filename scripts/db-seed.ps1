@@ -1,1 +1,0 @@
-# Windows database seed script
