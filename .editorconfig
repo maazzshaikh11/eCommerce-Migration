@@ -1,0 +1,83 @@
+# ──────────────────────────────────────────────────────────────
+# EditorConfig — eCommerce Migration Monorepo
+# Consistent formatting across editors and IDEs
+# ──────────────────────────────────────────────────────────────
+
+root = true
+
+# ─── All files ──────────────────────────────────────────────
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# ─── C# / .NET ──────────────────────────────────────────────
+[*.{cs,csx}]
+indent_size = 4
+# StyleCop / .NET conventions
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Naming conventions
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = camel_case_underscore
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_underscore.required_prefix = _
+dotnet_naming_style.camel_case_underscore.capitalization = camel_case
+
+# ─── XML / MSBuild ──────────────────────────────────────────
+[*.{xml,xaml,csproj,props,targets}]
+indent_size = 2
+
+# ─── JSON ──────────────────────────────────────────────────
+[*.{json,jsonc,json5}]
+indent_size = 2
+
+# ─── YAML ──────────────────────────────────────────────────
+[*.{yml,yaml}]
+indent_size = 2
+
+# ─── TypeScript / JavaScript ────────────────────────────────
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_size = 2
+max_line_length = 120
+
+# ─── Vue ────────────────────────────────────────────────────
+[*.vue]
+indent_size = 2
+
+# ─── HTML / CSS / SCSS ──────────────────────────────────────
+[*.{html,htm,css,scss,sass,less}]
+indent_size = 2
+
+# ─── Markdown ──────────────────────────────────────────────
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ─── Shell scripts ─────────────────────────────────────────
+[*.{sh,bash}]
+indent_size = 2
+
+# ─── PowerShell ────────────────────────────────────────────
+[*.{ps1,psm1,psd1}]
+indent_size = 4
+
+# ─── Docker ────────────────────────────────────────────────
+[Dockerfile*]
+indent_size = 4
+
+# ─── Makefile ──────────────────────────────────────────────
+[Makefile]
+indent_style = tab
+
+# ─── Config files ──────────────────────────────────────────
+[*.{ini,conf,cfg}]
+indent_size = 2

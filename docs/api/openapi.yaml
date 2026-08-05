@@ -1,0 +1,394 @@
+openapi: 3.0.3
+info:
+  title: eCommerce Migration API
+  version: 1.0.0
+  description: |
+    RESTful JSON API for the modernized eCommerce application.
+    Built with .NET 10 Web API, JWT Bearer authentication, and ADO.NET data access.
+servers:
+  - url: http://localhost:5001/api
+    description: Development
+  - url: https://api.example.com/api
+    description: Production
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ProductListResponseDto:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        price: { type: number, format: double }
+        thumbnailUrl: { type: string }
+        categoryName: { type: string }
+    ProductDetailDto:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        price: { type: number, format: double }
+        imageUrl: { type: string }
+        thumbnailUrl: { type: string }
+        isActive: { type: boolean }
+        createdDate: { type: string, format: date-time }
+        categoryName: { type: string }
+        images:
+          type: array
+          items: { $ref: '#/components/schemas/ProductImageDto' }
+        variants:
+          type: array
+          items: { $ref: '#/components/schemas/ProductVariantDto' }
+    ProductImageDto:
+      type: object
+      properties:
+        id: { type: integer }
+        imageUrl: { type: string }
+        isPrimary: { type: boolean }
+        displayOrder: { type: integer }
+    ProductVariantDto:
+      type: object
+      properties:
+        id: { type: integer }
+        variantName: { type: string }
+        variantValue: { type: string }
+        priceAdjustment: { type: number, format: double }
+        stockQuantity: { type: integer }
+    CategoryDto:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        thumbnailUrl: { type: string }
+        parentCategoryId: { type: integer, nullable: true }
+        children:
+          type: array
+          nullable: true
+          items: { $ref: '#/components/schemas/CategoryDto' }
+    CartItemDto:
+      type: object
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        productName: { type: string }
+        variantName: { type: string }
+        imageUrl: { type: string }
+        unitPrice: { type: number, format: double }
+        quantity: { type: integer }
+        lineTotal: { type: number, format: double }
+    AddressDto:
+      type: object
+      properties:
+        id: { type: integer }
+        streetAddress: { type: string }
+        city: { type: string }
+        stateProvince: { type: string }
+        postalCode: { type: string }
+        country: { type: string }
+        isDefault: { type: boolean }
+    ShippingOptionDto:
+      type: object
+      properties:
+        method: { type: string }
+        label: { type: string }
+        cost: { type: number, format: double }
+    OrderConfirmationDto:
+      type: object
+      properties:
+        orderId: { type: integer }
+        orderNumber: { type: string }
+        orderDate: { type: string, format: date-time }
+        orderStatus: { type: string }
+        subTotal: { type: number, format: double }
+        shippingTotal: { type: number, format: double }
+        taxTotal: { type: number, format: double }
+        grandTotal: { type: number, format: double }
+        shippingAddressFormatted: { type: string, nullable: true }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItemDto' }
+    OrderItemDto:
+      type: object
+      properties:
+        productName: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number, format: double }
+        lineTotal: { type: number, format: double }
+    PagedResult_ProductListResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ProductListResponseDto' }
+        currentPage: { type: integer }
+        pageSize: { type: integer }
+        totalCount: { type: integer }
+        totalPages: { type: integer }
+security:
+  - BearerAuth: []
+paths:
+  /auth/login:
+    post:
+      security: []
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  customerId: { type: integer }
+                  email: { type: string }
+        '401':
+          description: Invalid credentials
+  /auth/register:
+    post:
+      security: []
+      summary: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                firstName: { type: string }
+                lastName: { type: string }
+                phoneNumber: { type: string }
+      responses:
+        '200':
+          description: Success
+        '409':
+          description: Email already registered
+  /auth/me:
+    get:
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+  /products:
+    get:
+      security: []
+      summary: List products
+      parameters:
+        - { name: categoryId, in: query, schema: { type: integer } }
+        - { name: searchQuery, in: query, schema: { type: string } }
+        - { name: minPrice, in: query, schema: { type: number } }
+        - { name: maxPrice, in: query, schema: { type: number } }
+        - { name: sortBy, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 12 } }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PagedResult_ProductListResponseDto' }
+  /products/{id}:
+    get:
+      security: []
+      summary: Get product detail
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductDetailDto' }
+        '404':
+          description: Not found
+  /products/featured:
+    get:
+      security: []
+      summary: Get featured products
+      parameters:
+        - { name: count, in: query, schema: { type: integer, default: 6 } }
+      responses:
+        '200':
+          description: Success
+  /categories:
+    get:
+      security: []
+      summary: Get category tree
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CategoryDto' }
+  /cart:
+    get:
+      summary: Get cart items
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CartItemDto' }
+    delete:
+      summary: Clear cart
+      responses:
+        '204':
+          description: Cleared
+  /cart/items:
+    post:
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId: { type: integer }
+                quantity: { type: integer }
+                variantId: { type: integer, nullable: true }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CartItemDto' }
+  /cart/items/{id}:
+    put:
+      summary: Update quantity
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity: { type: integer }
+      responses:
+        '204':
+          description: Updated
+    delete:
+      summary: Remove item
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '204':
+          description: Removed
+  /checkout/addresses:
+    get:
+      summary: Get saved addresses
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AddressDto' }
+    post:
+      summary: Add address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressDto' }
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+  /checkout/shipping-options:
+    get:
+      summary: Get shipping options
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ShippingOptionDto' }
+  /checkout/validate-payment:
+    post:
+      summary: Validate payment (mock)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardholderName: { type: string }
+                cardNumber: { type: string }
+                expirationDate: { type: string }
+                cvv: { type: string }
+      responses:
+        '200':
+          description: Valid
+  /checkout/orders:
+    post:
+      summary: Place order
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addressId: { type: integer }
+                shippingMethod: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrderConfirmationDto' }
+        '400':
+          description: Bad request
+  /orders:
+    get:
+      summary: List orders
+      responses:
+        '200':
+          description: Success
+  /orders/{id}:
+    get:
+      summary: Get order detail
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not found

@@ -1,0 +1,3 @@
+<template>
+  <div class="spinner">Loading...</div>
+</template>
