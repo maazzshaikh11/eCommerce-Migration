@@ -26,9 +26,9 @@ The migration was executed across 10 phases (125 tasks) using the Strangler Fig 
 ```mermaid
 graph TB
     Client[Client Browser]
-    YARP[YARP Reverse Proxy :5003]
-    API[.NET 10 Web API :5001]
-    SPA[Vue 3 SPA :5002]
+    YARP[YARP Reverse Proxy ]
+    API[.NET 10 Web API ]
+    SPA[Vue 3 SPA ]
     DB[(SQL Server\nLegacyEcommerceDb)]
 
     Client --> YARP
@@ -287,13 +287,6 @@ All documentation lives under [`docs/`](docs/). See the [Documentation Index](do
 | Runbooks | [Incident Response](docs/runbooks/incident-response.md) | Production incident guide |
 | Reference | [Legacy Codebase Notes](docs/reference/legacy-codebase-notes.md) | Migration mappings, gotchas |
 
-## Screenshots
-
-<!-- Add screenshots here -->
-
-## Contributors
-
-<!-- Add contributors here -->
 
 ## License
 
