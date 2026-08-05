@@ -72,23 +72,23 @@ src/backend/
 
 ```mermaid
 sequenceDiagram
-    participant B as Browser
-    participant Y as YARP :5003
-    participant A as API :5001
-    participant S as Service
-    participant R as Repository
-    participant D as Database
+    participant Browser
+    participant ReverseProxy
+    participant WebAPI
+    participant ProductService
+    participant ProductRepository
+    participant SQLServer
 
-    B→>Y: GET /api/products?categoryId=1
-    Y→>A: Forward (native controller)
-    A→>A: JWT validation middleware
-    A→>S: ProductService.GetProducts(...)
-    S→>R: ProductRepository.GetProductsByCategoryTree(1)
-    R→>D: SELECT * FROM Product WHERE ...
-    D→>R: DataTable
-    R→>S: IEnumerable<Product>
-    S→>A: PagedResult<ProductListResponseDto>
-    A→>B: 200 OK { items, totalCount, ... }
+    Browser->>ReverseProxy: GET /api/products?categoryId=1
+    ReverseProxy->>WebAPI: Forward request
+    WebAPI->>WebAPI: Validate JWT
+    WebAPI->>ProductService: GetProducts()
+    ProductService->>ProductRepository: Query products
+    ProductRepository->>SQLServer: Execute SQL query
+    SQLServer-->>ProductRepository: Product records
+    ProductRepository-->>ProductService: Product list
+    ProductService-->>WebAPI: Paged product response
+    WebAPI-->>Browser: 200 OK (JSON)
 ```
 
 ## Related
