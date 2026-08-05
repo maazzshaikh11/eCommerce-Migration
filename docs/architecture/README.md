@@ -19,9 +19,9 @@ This directory contains the architecture documentation for the eCommerce migrati
 ```mermaid
 graph TB
     Client[Client Browser]
-    YARP[YARP Reverse Proxy :5003]
-    API[.NET 10 Web API :5001]
-    SPA[Vue 3 SPA :5002]
+    YARP[YARP Reverse Proxy ]
+    API[.NET 10 Web API ]
+    SPA[Vue 3 SPA ]
     DB[(SQL Server\nLegacyEcommerceDb)]
 
     Client --> YARP
