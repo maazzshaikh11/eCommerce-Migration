@@ -1,1 +1,0 @@
-# Dev certificate generation script
