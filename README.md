@@ -4,7 +4,7 @@
 
 ## Overview
 
-This repository contains the complete modernized eCommerce application — a full-stack monorepo with a stateless .NET 10 backend, a Vue 3 SPA frontend, and a YARP reverse proxy. The legacy ASP.NET MVC 5 application has been fully decommissioned; all traffic now routes to the modern stack.
+This repository contains the complete modernized eCommerce application — a full-stack monorepo with a stateless .NET 10 backend, a Vue 3 SPA frontend, and a YARP reverse proxy. The legacy ASP.NET MVC 5 application has been successfully modernized into a Vue 3 + .NET 10 architecture using the Strangler Fig migration pattern while preserving feature parity; all traffic now routes to the modern stack.
 
 The migration was executed across 10 phases (125 tasks) using the Strangler Fig pattern: vertical slice by vertical slice, running old and new systems side-by-side until the legacy app could be safely removed.
 
@@ -71,7 +71,6 @@ src/backend/
 ecommerce-migration/
 ├── .github/              ← CI/CD workflows, PR templates, dependabot
 ├── config/               ← Shared configs (editorconfig, stylecop)
-├── docker/               ← Container definitions, docker-compose
 ├── docs/                 ← All project documentation
 │   ├── api/              ← Endpoint catalog, OpenAPI spec
 │   ├── architecture/     ← Architecture, data flow, auth, deployment
@@ -79,8 +78,6 @@ ecommerce-migration/
 │   ├── migration/        ← Task lists, roadmaps, reports, progress
 │   ├── reference/        ← Legacy notes, prompt library
 │   └── runbooks/         ← Setup, seeding, incident, rollback guides
-├── infra/                ← Terraform, Bicep, Kubernetes manifests
-├── scripts/              ← Setup, seed, migrate, health-check scripts
 ├── src/
 │   ├── backend/          ← .NET 10 solution (API, Core, Services, Data, Tests)
 │   ├── frontend/         ← Vue 3 SPA (Vite + Pinia + Vue Router)
@@ -88,7 +85,6 @@ ecommerce-migration/
 │   ├── migration/        ← DB migration tool (placeholder)
 │   └── shared/           ← Shared contracts (placeholder)
 ├── tests/                ← E2E (Playwright), integration, load, contract tests
-├── tools/                ← Cert generators, lint configs, code generators
 ├── Directory.Build.props ← Shared MSBuild properties
 ├── Directory.Packages.props ← Central package version management
 ├── Ecommerce.sln         ← .NET solution file
@@ -103,7 +99,7 @@ ecommerce-migration/
 | [.NET SDK](https://dotnet.microsoft.com/download) | 10.0.302+ | Backend API, tests |
 | [Node.js](https://nodejs.org/) | 22+ | Frontend SPA, E2E tests |
 | [npm](https://www.npmjs.com/) | 10+ | Package management |
-| [SQL Server LocalDB](https://learn.microsoft.com/sql/database-engine/configure-windows/sql-server-express-localdb) | — | Database |
+| [SQL Server ](https://learn.microsoft.com/sql/database-engine/configure-windows/sql-server-express-localdb) | — | Database |
 | [Git](https://git-scm.com/) | 2.x | Version control |
 
 ## Local Setup
@@ -116,7 +112,7 @@ cd src/backend
 # Restore packages
 dotnet restore Ecommerce.sln
 
-# Run the API (starts on port 5001)
+# Run the API 
 dotnet run --project Ecommerce.Api/Ecommerce.Api.csproj
 ```
 
@@ -128,13 +124,13 @@ cd src/frontend/spa
 # Install dependencies
 npm install
 
-# Start dev server (starts on port 5173)
+# Start dev server 
 npm run dev
 ```
 
 ### Database
 
-The application uses SQL Server LocalDB with a `LegacyEcommerceDb` database.
+The application uses SQL Server  with a `LegacyEcommerceDb` database.
 
 ```bash
 # Setup database (creates + seeds)
@@ -152,18 +148,17 @@ See [Local Setup Runbook](docs/runbooks/local-setup.md) for detailed instruction
 ## Running the Application
 
 ```bash
-# Terminal 1: Backend API (port 5001)
+# Terminal 1: Backend API 
 cd src/backend
 dotnet run --project Ecommerce.Api/Ecommerce.Api.csproj
 
-# Terminal 2: Frontend SPA (port 5173)
+# Terminal 2: Frontend SPA 
 cd src/frontend/spa
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
-
-> YARP reverse proxy (port 5003) runs as part of the API process and routes SPA paths to port 5002.
+After starting both services, open the application in your browser.
+> YARP reverse proxy runs as part of the API process and routes SPA paths.
 
 ## Running Tests
 
