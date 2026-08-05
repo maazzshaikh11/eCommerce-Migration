@@ -1,1 +1,0 @@
-# DbUp/FluentMigrator runner image
